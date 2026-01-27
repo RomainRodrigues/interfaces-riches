@@ -20,6 +20,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-player": "^3.4.0",
+    "srt-support-for-html5-videos": "^2.6.11",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

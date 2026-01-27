@@ -31,6 +31,7 @@ export default function Home() {
         <div className="flex-[2] flex flex-col gap-4 overflow-hidden">
           <VideoPlayer 
             url={filmData.film.file_url}
+            subtitles={filmData.subtitles}
           />
         </div>
 
