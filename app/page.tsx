@@ -1,17 +1,47 @@
 "use client";
 
 import Chat from "@/components/Chat";
-import { useEffect, useState } from "react";
-import { VideoPlayer } from "@/components/video-player";
-import type { FilmData } from "@/types/film";
+import { useEffect, useState, useRef } from "react";
+import { VideoPlayer, type VideoPlayerRef } from "@/components/video-player";
+import { ChaptersNavigation } from "@/components/chapters-navigation";
+import type { FilmData, Chapter } from "@/types/film";
 
 export default function Home() {
   const [filmData, setFilmData] = useState<FilmData | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  // Variable synchonisée avec le temps actuel de la vidéo
+  const [currentTime, setCurrentTime] = useState(0);
+  const videoPlayerRef = useRef<VideoPlayerRef>(null);
+
+  const handleTimeChange = (time: number) => {
+    setCurrentTime(time)
+  }
+
+  const handleChapterSelect = (timestamp: string) => {
+    const parts = timestamp.split(":");
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    const seconds = parseFloat(parts[2]);
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    
+    videoPlayerRef.current?.seekTo(totalSeconds);
+  };
 
   useEffect(() => {
     fetch("https://tp-iai3.cleverapps.io/projet/")
       .then(res => res.json())
-      .then(data => setFilmData(data))
+      .then(data => {
+        setFilmData(data);
+        // Récupérer et afficher les chapitres
+        if (data.chapters) {
+          fetch(data.chapters)
+            .then(res => res.json())
+            .then(chaptersData => {
+              setChapters(chaptersData as Chapter[]);
+            })
+            .catch(err => console.error("Erreur chargement chapitres:", err));
+        }
+      })
       .catch(err => console.error("Erreur chargement:", err));
   }, []);
 
@@ -29,9 +59,18 @@ export default function Home() {
       <div className="lg:col-span-2 flex flex-col gap-6 min-h-0">
         {/* Vidéo - 2/3 hauteur */}
         <div className="flex-[2] flex flex-col gap-4 overflow-hidden">
-          <VideoPlayer 
+          {chapters.length > 0 && (
+            <ChaptersNavigation
+              currentTime={currentTime}
+              chapters={chapters}
+              onChapterSelect={handleChapterSelect}
+            />
+          )}
+          <VideoPlayer
+            ref={videoPlayerRef}
             url={filmData.film.file_url}
             subtitles={filmData.subtitles}
+            onTimeChange={handleTimeChange}
           />
         </div>
 

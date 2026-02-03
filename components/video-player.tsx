@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useImperativeHandle, forwardRef } from "react";
 import ReactPlayer from "react-player";
 import {
   MediaController,
@@ -23,9 +23,16 @@ interface VideoPlayerProps {
     fr: string;
     es: string;
   }
+  onTimeChange: (time: number) => void
 }
 
-export function VideoPlayer({ url, subtitles }: VideoPlayerProps) {
+export interface VideoPlayerRef {
+  seekTo: (seconds: number) => void;
+}
+
+export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, ref) => {
+  const playerRef = useRef<HTMLVideoElement | null>(null);
+
   const [trackData, setTrackData] = useState<{
     en?: string;
     fr?: string;
@@ -40,13 +47,13 @@ export function VideoPlayer({ url, subtitles }: VideoPlayerProps) {
     const loadSubtitles = async () => {
       const converted: typeof trackData = {};
 
-      for (const [lang, srtUrl] of Object.entries(subtitles)) {
+      for (const [lang, srtUrl] of Object.entries(props.subtitles)) {
         try {
           const response = await fetch(srtUrl);
           const srtContent = await response.text();
           const vttContent = srt2vtt(srtContent);
           const blob = new Blob([vttContent], { type: "text/vtt" });
-          converted[lang as keyof typeof subtitles] = URL.createObjectURL(blob);
+          converted[lang as keyof typeof props.subtitles] = URL.createObjectURL(blob);
         } catch (error) {
           console.error(`Failed to load subtitles for ${lang}:`, error);
         }
@@ -56,26 +63,45 @@ export function VideoPlayer({ url, subtitles }: VideoPlayerProps) {
     };
 
     loadSubtitles();
-  }, [subtitles]);
+  }, [props, props.subtitles]);
+
+  useImperativeHandle(ref, () => ({
+    seekTo: (seconds: number) => {
+      if (playerRef.current) {
+        playerRef.current.currentTime = seconds;
+      }
+    },
+  }));
+
+  const handleTimeUpdate = () => {
+    const player = playerRef.current;
+    // We only want to update time slider if we are not currently seeking
+    if (!player || !player.duration) return;
+
+    props.onTimeChange(player.currentTime);
+  }
 
   return (
     <MediaController
-      defaultSubtitles
       style={{
         flex: 1,
         aspectRatio: "16 / 9",
       }}
     >
+      <div>
+    </div>
       <ReactPlayer
+        ref={playerRef}
         slot="media"
         crossOrigin=""
-        src={url}
+        src={props.url}
         controls={false}
         pip={false}
         style={{
           width: "100%",
           height: "100%",
         }}
+        onTimeUpdate={handleTimeUpdate}
       >
         {trackData.en && (
           <track
@@ -83,7 +109,6 @@ export function VideoPlayer({ url, subtitles }: VideoPlayerProps) {
             srcLang="en"
             label="English"
             src={trackData.en}
-            default
           />
         )}
         {trackData.fr && (
@@ -116,4 +141,6 @@ export function VideoPlayer({ url, subtitles }: VideoPlayerProps) {
       </MediaControlBar>
     </MediaController>
   );
-}
+});
+
+VideoPlayer.displayName = "VideoPlayer";

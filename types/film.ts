@@ -15,10 +15,14 @@ export interface FilmData {
 }
 
 export interface Chapter {
-  id: string;
+  chapter: number;
+  description: string;
+  description_es: string;
+  description_fr: string;
+  timestamp: string;
   title: string;
-  startTime: number;
-  endTime?: number;
+  title_es: string;
+  title_fr: string;
 }
 
 export interface AudioDescription {
