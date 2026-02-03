@@ -142,16 +142,21 @@ export default function Chat() {
   }
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col" role="region" aria-label="Chat en direct">
       <CardContent className="flex-1 flex flex-col p-0 min-h-0">
-        <div className="px-4 py-2 border-b border-neutral-800 flex items-center justify-between">
+        <header className="px-4 py-2 border-b border-neutral-800 flex items-center justify-between">
           <span className="text-sm text-neutral-400">
             Connecté en tant que <span className="font-bold">{userName}</span>
           </span>
-          <span className={`text-xs ${isConnected ? "text-green-500" : "text-red-500"}`}>
+          <span 
+            className={`text-xs ${isConnected ? "text-green-500" : "text-red-500"}`}
+            role="status"
+            aria-live="polite"
+            aria-label={isConnected ? "Statut : connecté au chat" : "Statut : déconnecté du chat"}
+          >
             {isConnected ? "● Connecté" : "● Déconnecté"}
           </span>
-        </div>
+        </header>
         <ChatMessages messages={messages} />
         <ChatInput onSendMessage={handleSendMessage} disabled={!isConnected} />
       </CardContent>
