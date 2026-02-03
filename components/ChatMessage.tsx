@@ -1,18 +1,16 @@
 import { Clock, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Fonction pour formater le timestamp en temps lisible
 function formatTimestamp(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-// Fonction pour formater l'heure du message
-function formatTime(timestamp: string): string {
-  const date = new Date(parseInt(timestamp) * 1000);
-  const hours = date.getUTCHours().toString().padStart(2, "0");
-  const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+function formatTime(timestamp: number): string {
+  const date = new Date(timestamp);
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 }
 
@@ -20,7 +18,7 @@ interface ChatMessageProps {
   name: string;
   message: string;
   moment?: number;
-  when: string;
+  when: number;
 }
 
 export function ChatMessage({ name, message, moment, when }: ChatMessageProps) {

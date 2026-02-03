@@ -7,14 +7,15 @@ import { Input } from "@/components/ui/input";
 
 interface ChatInputProps {
   onSendMessage?: (message: string, moment?: number) => void;
+  disabled?: boolean;
 }
 
-export function ChatInput({ onSendMessage }: ChatInputProps) {
+export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
   const [inputMessage, setInputMessage] = useState("");
   const [shareTimestamp, setShareTimestamp] = useState(false);
 
   const handleSend = () => {
-    if (inputMessage.trim()) {
+    if (inputMessage.trim() && !disabled) {
       onSendMessage?.(
         inputMessage,
         shareTimestamp ? 330 : undefined
@@ -32,6 +33,7 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
           size="xs"
           onClick={() => setShareTimestamp(!shareTimestamp)}
           className="gap-1.5"
+          disabled={disabled}
         >
           <Film className="size-3" />
           {shareTimestamp ? "Moment: 5:30" : "Partager le moment actuel"}
@@ -41,10 +43,11 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
       {/* Input et bouton d'envoi */}
       <div className="flex gap-2">
         <Input
-          placeholder="Écrivez votre message..."
+          placeholder={disabled ? "Connexion en cours..." : "Écrivez votre message..."}
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           className="flex-1"
+          disabled={disabled}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -52,7 +55,7 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
             }
           }}
         />
-        <Button size="icon" className="shrink-0" onClick={handleSend}>
+        <Button size="icon" className="shrink-0" onClick={handleSend} disabled={disabled || !inputMessage.trim()}>
           <Send className="size-4" />
         </Button>
       </div>
