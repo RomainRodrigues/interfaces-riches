@@ -29,7 +29,7 @@ export function ChatInput({ onSendMessage, disabled = false, currentTime = 0 }: 
 
   const handleClick = () => {
     if (!shareTimestamp) {
-      setSelectedMoment(currentTime);
+      setSelectedMoment(Math.floor(currentTime));
     }
     setShareTimestamp(!shareTimestamp);
   };
