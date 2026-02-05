@@ -1,17 +1,30 @@
 import { Clock, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-function formatTimestamp(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
+import { secondsToTimestamp } from "@/lib/timestamp-utils";
 
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const isToday = date.toDateString() === today.toDateString();
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${hours}:${minutes}`;
+  const time = `${hours}:${minutes}`;
+
+  if (isToday) {
+    return `Aujourd'hui à ${time}`;
+  } else if (isYesterday) {
+    return `Hier à ${time}`;
+  } else {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year} ${time}`;
+  }
 }
 
 interface ChatMessageProps {
@@ -19,11 +32,12 @@ interface ChatMessageProps {
   message: string;
   moment?: number;
   when: number;
+  onTimestampClick?: (time: string) => void;
 }
 
-export function ChatMessage({ name, message, moment, when }: ChatMessageProps) {
+export function ChatMessage({ name, message, moment, when, onTimestampClick }: ChatMessageProps) {
   const timeLabel = `Envoyé à ${formatTime(when)}`;
-  
+
   return (
     <article 
       className="flex gap-3 hover:bg-neutral-200 focus:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg transition-colors p-1"
@@ -52,13 +66,17 @@ export function ChatMessage({ name, message, moment, when }: ChatMessageProps) {
           <Button
             variant="outline"
             size="xs"
+            onClick={() => {
+              const timestamp = secondsToTimestamp(moment);
+              onTimestampClick?.(timestamp);
+            }}
             className="mt-2 gap-1.5 text-xs text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:ring-2 focus:ring-blue-500"
-            aria-label={`Aller au moment ${formatTimestamp(moment)} de la vidéo`}
+            aria-label={`Aller au moment ${secondsToTimestamp(moment)} de la vidéo`}
             tabIndex={0}
           >
             <Film className="size-3" aria-hidden="true" />
             <Clock className="size-3" aria-hidden="true" />
-            <span>{formatTimestamp(moment)}</span>
+            <span>{secondsToTimestamp(moment)}</span>
           </Button>
         )}
       </div>

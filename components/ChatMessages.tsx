@@ -13,9 +13,10 @@ interface Message {
 
 interface ChatMessagesProps {
   messages: Message[];
+  onTimestampClick?: (time: string) => void;
 }
 
-export function ChatMessages({ messages }: ChatMessagesProps) {
+export function ChatMessages({ messages, onTimestampClick }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll vers le bas quand de nouveaux messages arrivent
@@ -45,6 +46,7 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
               message={msg.message}
               moment={msg.moment}
               when={msg.when}
+              onTimestampClick={onTimestampClick}
             />
           ))
         )}

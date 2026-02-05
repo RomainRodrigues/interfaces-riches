@@ -2,26 +2,36 @@
 
 import { useState } from "react";
 import { Send, Film } from "lucide-react";
+import { secondsToTimestamp } from "@/lib/timestamp-utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface ChatInputProps {
   onSendMessage?: (message: string, moment?: number) => void;
   disabled?: boolean;
+  currentTime?: number;
 }
 
-export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
+export function ChatInput({ onSendMessage, disabled = false, currentTime = 0 }: ChatInputProps) {
   const [inputMessage, setInputMessage] = useState("");
   const [shareTimestamp, setShareTimestamp] = useState(false);
+  const [selectedMoment, setSelectedMoment] = useState<number>(0);
 
   const handleSend = () => {
     if (inputMessage.trim() && !disabled) {
       onSendMessage?.(
         inputMessage,
-        shareTimestamp ? 330 : undefined
+        shareTimestamp ? selectedMoment : undefined
       );
       setInputMessage("");
     }
+  };
+
+  const handleClick = () => {
+    if (!shareTimestamp) {
+      setSelectedMoment(currentTime);
+    }
+    setShareTimestamp(!shareTimestamp);
   };
 
   return (
@@ -39,14 +49,14 @@ export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
           type="button"
           variant={shareTimestamp ? "default" : "outline"}
           size="xs"
-          onClick={() => setShareTimestamp(!shareTimestamp)}
+          onClick={handleClick}
           className="gap-1.5"
           disabled={disabled}
           aria-pressed={shareTimestamp}
-          aria-label={shareTimestamp ? "Moment sélectionné: 5:30. Cliquez pour désactiver" : "Partager le moment actuel de la vidéo"}
+          aria-label={shareTimestamp ? `Moment sélectionné: ${secondsToTimestamp(selectedMoment)}. Cliquez pour désactiver` : "Partager le moment actuel de la vidéo"}
         >
           <Film className="size-3" aria-hidden="true" />
-          <span>{shareTimestamp ? "Moment: 5:30" : "Partager le moment actuel"}</span>
+          <span>{shareTimestamp ? `Moment: ${secondsToTimestamp(selectedMoment)}` : "Partager le moment actuel"}</span>
         </Button>
       </div>
 

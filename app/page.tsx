@@ -3,8 +3,9 @@
 import Chat from "@/components/Chat";
 import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
-import { VideoPlayer, type VideoPlayerRef } from "@/components/video-player";
-import { ChaptersNavigation } from "@/components/chapters-navigation";
+import { VideoPlayer, type VideoPlayerRef } from "@/components/VideoPlayer";
+import { ChaptersNavigation } from "@/components/ChaptersNavigation";
+import { timestampToSeconds } from "@/lib/timestamp-utils";
 import type { FilmData, Chapter, POI } from "@/types/film";
 
 const Map = dynamic(() => import("@/components/map"), { ssr: false });
@@ -22,12 +23,7 @@ export default function Home() {
   }
 
   const seekToTimestamp = (timestamp: string) => {
-    const parts = timestamp.split(":");
-    const hours = parseInt(parts[0], 10);
-    const minutes = parseInt(parts[1], 10);
-    const seconds = parseFloat(parts[2]);
-    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
-    
+    const totalSeconds = timestampToSeconds(timestamp);
     videoPlayerRef.current?.seekTo(totalSeconds);
   };
 
@@ -94,7 +90,7 @@ export default function Home() {
 
       {/* Chat - pleine hauteur droite */}
       <div className="min-h-0">
-        <Chat />
+        <Chat onTimestampClick={seekToTimestamp} currentTime={currentTime} />
       </div>
     </div>
   );

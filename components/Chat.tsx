@@ -14,9 +14,14 @@ interface Message {
   moment?: number;
 }
 
+interface ChatProps {
+  onTimestampClick?: (time: string) => void;
+  currentTime?: number;
+}
+
 const emptySubscribe = () => () => {};
 
-export default function Chat() {
+export default function Chat({ onTimestampClick, currentTime = 0 }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const userName = "LylRom";
@@ -96,8 +101,11 @@ export default function Chat() {
     };
 
     ws.onerror = () => {
-      console.error("Erreur WebSocket: connexion impossible au serveur");
-      setIsConnected(false);
+      // Ne logger l'erreur que si la connexion n'est pas établie
+      // (On avait des erreurs de connexion alors que tout marchait sur la page)
+      if (!ws.OPEN) {
+        console.warn("Erreur WebSocket lors de la connexion");
+      }
     };
 
     return () => {
@@ -157,8 +165,8 @@ export default function Chat() {
             {isConnected ? "● Connecté" : "● Déconnecté"}
           </span>
         </header>
-        <ChatMessages messages={messages} />
-        <ChatInput onSendMessage={handleSendMessage} disabled={!isConnected} />
+        <ChatMessages messages={messages} onTimestampClick={onTimestampClick} />
+        <ChatInput onSendMessage={handleSendMessage} disabled={!isConnected} currentTime={currentTime} />
       </CardContent>
     </Card>
   );

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { timestampToSeconds } from "@/lib/timestamp-utils";
 import type { Chapter } from "@/types/film";
 
 interface ChaptersNavigationProps {
@@ -15,14 +16,6 @@ export function ChaptersNavigation({
   onChapterSelect,
   currentTime = 0,
 }: ChaptersNavigationProps) {
-  const timestampToSeconds = (timestamp: string): number => {
-    const parts = timestamp.split(":");
-    const hours = parseInt(parts[0], 10);
-    const minutes = parseInt(parts[1], 10);
-    const seconds = parseFloat(parts[2]);
-    return hours * 3600 + minutes * 60 + seconds;
-  };
-
   const getCurrentChapterIndex = (): number => {
     return chapters.findIndex((chapter, index) => {
       const currentSeconds = timestampToSeconds(chapter.timestamp);
