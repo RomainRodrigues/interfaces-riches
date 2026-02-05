@@ -30,12 +30,22 @@ export interface AudioDescription {
   text: string;
 }
 
+export interface POITimestamp {
+  time: string;
+  scene: string;
+  scene_fr: string;
+  scene_es: string;
+}
+
 export interface POI {
-  id: string;
-  name: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-  scenes: number[];
+  id: number;
+  title: string;
+  title_fr: string;
+  title_es: string;
+  latitude: number;
+  longitude: number;
+  description: string;
+  description_fr: string;
+  description_es: string;
+  timestamps?: POITimestamp[];
 }
