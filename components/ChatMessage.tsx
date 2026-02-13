@@ -16,9 +16,9 @@ function formatTime(timestamp: number): string {
   const time = `${hours}:${minutes}`;
 
   if (isToday) {
-    return `Aujourd'hui à ${time}`;
+    return `Today at ${time}`;
   } else if (isYesterday) {
-    return `Hier à ${time}`;
+    return `Yesterday at ${time}`;
   } else {
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -36,12 +36,12 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ name, message, moment, when, onTimestampClick }: ChatMessageProps) {
-  const timeLabel = `Envoyé à ${formatTime(when)}`;
+  const timeLabel = `Sent at ${formatTime(when)}`;
 
   return (
     <article 
       className="flex gap-3 hover:bg-neutral-200 focus:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg transition-colors p-1"
-      aria-label={`Message de ${name}: ${message}`}
+      aria-label={`Message from ${name}: ${message}`}
       tabIndex={0}
     >
       <div className="flex-1 min-w-0">
@@ -71,7 +71,7 @@ export function ChatMessage({ name, message, moment, when, onTimestampClick }: C
               onTimestampClick?.(timestamp);
             }}
             className="mt-2 gap-1.5 text-xs text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:ring-2 focus:ring-blue-500"
-            aria-label={`Aller au moment ${secondsToTimestamp(moment)} de la vidéo`}
+            aria-label={`Go to ${secondsToTimestamp(moment)} in the video`}
             tabIndex={0}
           >
             <Film className="size-3" aria-hidden="true" />

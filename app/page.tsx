@@ -14,7 +14,7 @@ export default function Home() {
   const [filmData, setFilmData] = useState<FilmData | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [pois, setPois] = useState<POI[]>([]);
-  // Variable synchonisée avec le temps actuel de la vidéo
+  // Variable synchronized with the current video time
   const [currentTime, setCurrentTime] = useState(0);
   const videoPlayerRef = useRef<VideoPlayerRef>(null);
 
@@ -32,14 +32,14 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         setFilmData(data);
-        // Récupérer et afficher les chapitres
+        // Fetch and display chapters
         if (data.chapters) {
           fetch(data.chapters)
             .then(res => res.json())
             .then(chaptersData => {
               setChapters(chaptersData as Chapter[]);
             })
-            .catch(err => console.error("Erreur chargement chapitres:", err));
+            .catch(err => console.error("Error loading chapters:", err));
         }
         if (data.poi) {
           fetch(data.poi)
@@ -47,25 +47,25 @@ export default function Home() {
             .then(poiData => {
               setPois(poiData as POI[]);
             })
-            .catch(err => console.error("Erreur chargement poi:", err));
+            .catch(err => console.error("Error loading POI:", err));
         }
       })
-      .catch(err => console.error("Erreur chargement:", err));
+      .catch(err => console.error("Error loading:", err));
   }, []);
 
   if (!filmData) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Chargement...</div>
+        <div className="text-xl">Loading...</div>
       </div>
     );
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 h-screen overflow-hidden bg-neutral-100 dark:bg-neutral-900">
-      {/* Colonne gauche */}
+      {/* Left column */}
       <div className="lg:col-span-2 flex flex-col gap-6 min-h-0">
-        {/* Vidéo - 2/3 hauteur */}
+        {/* Video - 2/3 height */}
         <div className="flex-[2] flex flex-col gap-4 overflow-hidden">
           {chapters.length > 0 && (
             <ChaptersNavigation
@@ -82,13 +82,13 @@ export default function Home() {
           />
         </div>
 
-        {/* Carte - 1/3 hauteur */}
+        {/* Map - 1/3 height */}
         <div className="bg-gray-200 rounded-lg flex-1">
           <Map pois={pois} onTimestampClick={seekToTimestamp} />
         </div>
       </div>
 
-      {/* Chat - pleine hauteur droite */}
+      {/* Chat - full height right */}
       <div className="min-h-0">
         <Chat onTimestampClick={seekToTimestamp} currentTime={currentTime} />
       </div>

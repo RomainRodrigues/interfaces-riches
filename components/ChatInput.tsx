@@ -41,9 +41,9 @@ export function ChatInput({ onSendMessage, disabled = false, currentTime = 0 }: 
         e.preventDefault();
         handleSend();
       }}
-      aria-label="Formulaire d'envoi de message"
+      aria-label="Message sending form"
     >
-      {/* Option pour partager un moment du film */}
+      {/* Option to share a movie moment */}
       <div className="flex items-center gap-2">
         <Button
           type="button"
@@ -53,21 +53,21 @@ export function ChatInput({ onSendMessage, disabled = false, currentTime = 0 }: 
           className="gap-1.5"
           disabled={disabled}
           aria-pressed={shareTimestamp}
-          aria-label={shareTimestamp ? `Moment sélectionné: ${secondsToTimestamp(selectedMoment)}. Cliquez pour désactiver` : "Partager le moment actuel de la vidéo"}
+          aria-label={shareTimestamp ? `Selected moment: ${secondsToTimestamp(selectedMoment)}. Click to disable` : "Share the current video moment"}
         >
           <Film className="size-3" aria-hidden="true" />
-          <span>{shareTimestamp ? `Moment: ${secondsToTimestamp(selectedMoment)}` : "Partager le moment actuel"}</span>
+          <span>{shareTimestamp ? `Moment: ${secondsToTimestamp(selectedMoment)}` : "Share current moment"}</span>
         </Button>
       </div>
 
-      {/* Input et bouton d'envoi */}
+      {/* Input and send button */}
       <div className="flex gap-2">
         <label htmlFor="chat-message-input" className="sr-only">
-          Votre message
+          Your message
         </label>
         <Input
           id="chat-message-input"
-          placeholder={disabled ? "Connexion en cours..." : "Écrivez votre message..."}
+          placeholder={disabled ? "Connecting..." : "Type your message..."}
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           className="flex-1"
@@ -81,14 +81,14 @@ export function ChatInput({ onSendMessage, disabled = false, currentTime = 0 }: 
           }}
         />
         <span id="chat-input-help" className="sr-only">
-          Appuyez sur Entrée pour envoyer le message
+          Press Enter to send the message
         </span>
         <Button 
           type="submit" 
           size="icon" 
           className="shrink-0" 
           disabled={disabled || !inputMessage.trim()}
-          aria-label="Envoyer le message"
+          aria-label="Send message"
         >
           <Send className="size-4" aria-hidden="true" />
         </Button>

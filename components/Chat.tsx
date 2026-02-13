@@ -33,7 +33,7 @@ export default function Chat({ onTimestampClick, currentTime = 0 }: ChatProps) {
     () => false
   );
 
-  // Connexion WebSocket
+  // WebSocket connection
   useEffect(() => {
     if (!isMounted) return;
 
@@ -42,7 +42,7 @@ export default function Chat({ onTimestampClick, currentTime = 0 }: ChatProps) {
 
     ws.onopen = () => {
       setIsConnected(true);
-      console.log("WebSocket connecté");
+      console.log("WebSocket connected");
     };
 
     ws.onmessage = (evt) => {
@@ -91,20 +91,19 @@ export default function Chat({ onTimestampClick, currentTime = 0 }: ChatProps) {
           });
         }
       } catch (error) {
-        console.error("Erreur parsing message:", error);
+        console.error("Error parsing message:", error);
       }
     };
 
     ws.onclose = (evt) => {
       setIsConnected(false);
-      console.log("WebSocket déconnecté", evt.code, evt.reason);
+      console.log("WebSocket disconnected", evt.code, evt.reason);
     };
 
     ws.onerror = () => {
-      // Ne logger l'erreur que si la connexion n'est pas établie
-      // (On avait des erreurs de connexion alors que tout marchait sur la page)
+      // Only log the error if the connection is not established
       if (!ws.OPEN) {
-        console.warn("Erreur WebSocket lors de la connexion");
+        console.warn("WebSocket connection error");
       }
     };
 
@@ -115,7 +114,7 @@ export default function Chat({ onTimestampClick, currentTime = 0 }: ChatProps) {
 
   const handleSendMessage = (text: string, moment?: number) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      console.error("WebSocket non connecté");
+      console.error("WebSocket not connected");
       return;
     }
 
@@ -143,26 +142,26 @@ export default function Chat({ onTimestampClick, currentTime = 0 }: ChatProps) {
     return (
       <Card className="h-full flex flex-col">
         <CardContent className="flex-1 flex items-center justify-center">
-          <p className="text-neutral-400">Chargement...</p>
+          <p className="text-neutral-400">Loading...</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="h-full flex flex-col" role="region" aria-label="Chat en direct">
+    <Card className="h-full flex flex-col" role="region" aria-label="Live chat">
       <CardContent className="flex-1 flex flex-col p-0 min-h-0">
         <header className="px-4 py-2 border-b border-neutral-800 flex items-center justify-between">
           <span className="text-sm text-neutral-400">
-            Connecté en tant que <span className="font-bold">{userName}</span>
+            Connected as <span className="font-bold">{userName}</span>
           </span>
           <span 
             className={`text-xs ${isConnected ? "text-green-500" : "text-red-500"}`}
             role="status"
             aria-live="polite"
-            aria-label={isConnected ? "Statut : connecté au chat" : "Statut : déconnecté du chat"}
+            aria-label={isConnected ? "Status: connected to chat" : "Status: disconnected from chat"}
           >
-            {isConnected ? "● Connecté" : "● Déconnecté"}
+            {isConnected ? "● Connected" : "● Disconnected"}
           </span>
         </header>
         <ChatMessages messages={messages} onTimestampClick={onTimestampClick} />
